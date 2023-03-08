@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findTrainers, upsertTrainer } from "~/server/utils/trainer";
+import { findTrainers, upsertTrainer, getTrainer } from "~/server/utils/trainer";
 import { findPokemon } from "~/server/utils/pokemon";
 
 const router = Router();
@@ -57,6 +57,21 @@ router.post("/trainer", async (req, res, next) => {
 
 /** トレーナーの取得 */
 // TODO: トレーナーを取得する API エンドポイントの実装
+router.get("/trainer/:trainerName", async (req, res, next) => {
+  try {
+    const { trainerName } = req.params;
+    
+    if (doesTrainerExist(trainerName) == false){     
+      res.status(404).send("トレーナーが存在しない");
+    } else {
+      const trainerData = await getTrainer(trainerName);
+      // console.log(trainerData); //デバッグ用
+      res.status(200).send(JSON.parse(trainerData));
+    }
+  } catch (err) {
+    next(err);
+  }
+});
 
 /** トレーナーの更新 */
 router.post("/trainer/:trainerName", async (req, res, next) => {
