@@ -44,7 +44,7 @@ router.post("/trainer", async (req, res, next) => {
       res.status(400).send("トレーナー名が含まれていない");
     }
     // TODO: すでにトレーナー（S3 オブジェクト）が存在していれば409を返す
-    if (doesTrainerExist(req.body.name)){
+    if (await doesTrainerExist(req.body.name)){
       res.status(409).send("すでにトレーナーが存在する");
     }
 
@@ -61,7 +61,7 @@ router.get("/trainer/:trainerName", async (req, res, next) => {
   try {
     const { trainerName } = req.params;
     
-    if (doesTrainerExist(trainerName) == false){     
+    if (await doesTrainerExist(trainerName) == false){     
       res.status(404).send("トレーナーが存在しない");
     } else {
       const trainerData = await getTrainer(trainerName);
@@ -78,8 +78,13 @@ router.post("/trainer/:trainerName", async (req, res, next) => {
   try {
     const { trainerName } = req.params;
     // TODO: トレーナーが存在していなければ404を返す
-    const result = await upsertTrainer(trainerName, req.body);
-    res.status(result["$metadata"].httpStatusCode).send(result);
+    console.log(`POST ${trainerName}`)
+    if (await doesTrainerExist(trainerName) == false){     
+      res.status(404).send("トレーナーが存在しない");
+    } else {
+      const result = await upsertTrainer(trainerName, req.body);
+      res.status(result["$metadata"].httpStatusCode).send(result);
+    }
   } catch (err) {
     next(err);
   }
