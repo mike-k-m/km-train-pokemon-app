@@ -8,6 +8,18 @@ router.get("/hello", (_req, res) => {
   res.send("Hello World");
 });
 
+/** トレーナー名が既に登録されているかの確認 */
+async function doesTrainerExist(inputName) {
+  const trainers = await findTrainers();
+    const names = trainers.map( trainer => trainer.Key).map( name => name.replace('.json',''));
+    if (names.includes(inputName)){
+      console.log(`inputトレーナー名: ${inputName}`);
+      console.log(`登録されているトレーナー名: ${names}`);
+      return true;
+    }
+    return false;
+}
+
 /** トレーナー名の一覧の取得 */
 router.get("/trainers", async (_req, res, next) => {
   try {
@@ -32,11 +44,7 @@ router.post("/trainer", async (req, res, next) => {
       res.status(400).send("トレーナー名が含まれていない");
     }
     // TODO: すでにトレーナー（S3 オブジェクト）が存在していれば409を返す
-    const trainers = await findTrainers();
-    const names = trainers.map( trainer => trainer.Key).map( name => name.replace('.json',''));
-    if (names.includes(req.body.name)){
-      console.log(`inputトレーナー名: ${req.body.name}`);
-      console.log(`登録されているトレーナー名: ${names}`);
+    if (doesTrainerExist(req.body.name)){
       res.status(409).send("すでにトレーナーが存在する");
     }
 
