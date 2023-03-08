@@ -26,7 +26,20 @@ router.get("/trainers", async (_req, res, next) => {
 router.post("/trainer", async (req, res, next) => {
   try {
     // TODO: リクエストボディにトレーナー名が含まれていなければ400を返す
+    if (req.body.name === "")
+    {
+      console.log(`req.body.nameが不正 req.body.name: ${req.body.name}`);
+      res.status(400).send("トレーナー名が含まれていない");
+    }
     // TODO: すでにトレーナー（S3 オブジェクト）が存在していれば409を返す
+    const trainers = await findTrainers();
+    const names = trainers.map( trainer => trainer.Key).map( name => name.replace('.json',''));
+    if (names.includes(req.body.name)){
+      console.log(`inputトレーナー名: ${req.body.name}`);
+      console.log(`登録されているトレーナー名: ${names}`);
+      res.status(409).send("すでにトレーナーが存在する");
+    }
+
     const result = await upsertTrainer(req.body.name, req.body);
     res.status(result["$metadata"].httpStatusCode).send(result);
   } catch (err) {
