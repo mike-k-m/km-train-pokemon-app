@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findTrainers, upsertTrainer, getTrainer } from "~/server/utils/trainer";
+import { findTrainers, upsertTrainer, getTrainer, deleteTrainer } from "~/server/utils/trainer";
 import { findPokemon } from "~/server/utils/pokemon";
 
 const router = Router();
@@ -92,6 +92,21 @@ router.post("/trainer/:trainerName", async (req, res, next) => {
 
 /** トレーナーの削除 */
 // TODO: トレーナーを削除する API エンドポイントの実装
+router.delete("/trainer/:trainerName", async (req, res, next) => {
+  try {
+    const { trainerName } = req.params;
+    // TODO: トレーナーが存在していなければ404を返す
+    console.log(`DELETE ${trainerName}`)
+    if (await doesTrainerExist(trainerName) == false){     
+      res.status(404).send("トレーナーが存在しない");
+    } else {
+      const result = await deleteTrainer(trainerName, req.body);
+      res.status(result["$metadata"].httpStatusCode).send(result);
+    }
+  } catch (err) {
+    next(err);
+  }
+});
 
 /** ポケモンの追加 */
 router.put(
