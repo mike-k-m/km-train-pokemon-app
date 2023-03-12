@@ -24,7 +24,8 @@ const addTrainer = async() => {
     switch(resultCode){
       case 200:
         alert(`${trainerName.value}を登録しました！`);
-        // TODO　トレーナー情報画面に遷移する。
+        // DONE　トレーナー情報画面に遷移する。
+        await navigateTo(`/trainerInfo/${trainerName.value}`);
         break;
       case 409:
         alert(`${trainerName.value}はすでにトレーナーが存在します`);

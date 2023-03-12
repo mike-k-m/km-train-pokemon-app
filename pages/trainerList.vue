@@ -23,7 +23,9 @@ watchEffect(()=>{
     <h1>つづきからはじめる</h1>
     <form @submit.prevent>
         <p v-for="(x, index) in trainers" :key="index">
+          <NuxtLink :to="`/trainerInfo/${x}`">
             {{x}}
+          </NuxtLink>
         </p>
     </form>
   </div>
