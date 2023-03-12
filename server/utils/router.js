@@ -49,6 +49,7 @@ router.post("/trainer", async (req, res, next) => {
     }
 
     const result = await upsertTrainer(req.body.name, req.body);
+    console.log(`trainer API result:`, result);
     res.status(result["$metadata"].httpStatusCode).send(result);
   } catch (err) {
     next(err);
