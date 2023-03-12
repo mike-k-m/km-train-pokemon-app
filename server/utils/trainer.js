@@ -59,7 +59,7 @@ export const deleteTrainer = async(name) => {
   };
   try {
     const data = await s3Client.send(new DeleteObjectCommand(bucketParams));
-    console.log("Success. トレーナーを削除しました。", data);
+    console.log("Backend Success. トレーナーを削除しました。", data);
     return data;
   } catch (err) {
     console.log("Error", err);

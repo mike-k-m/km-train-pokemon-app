@@ -1,14 +1,17 @@
 <script setup>
 console.log('trainerInfo Enter');
 
+const route = useRoute();
+const trainerName = route.params.name;
+
 const deleteTrainer = async () => {
   try {
-    const {data} = await useFetch(`/api/trainer/${$route.params.name}`, 
+    const {data} = await useFetch(`/api/trainer/${trainerName}`, 
     {
       method: "delete",
     });
-    const resultCode = data.value["$metadata"].httpStatusCode;
-    console.log(`deleteTrainer useFetch結果: ${resultCode}`);
+    // const resultCode = data.value["$metadata"].httpStatusCode; // TODO レスポンスの型に問題ある
+    console.log(`deleteTrainer useFetch結果: ${data}`);
     await navigateTo(`/`);
   } catch(err) {
     console.log(`deleteTrainer Err`, err);
@@ -21,7 +24,7 @@ const deleteTrainer = async () => {
   <div>
     <h1>トレーナー情報</h1>
     <div>
-      <p>トレーナー名：{{$route.params.name}}</p>
+      <p>トレーナー名：{{trainerName}}</p>
       <button @click="deleteTrainer">マサラタウンに帰る</button>
     </div>
     <div>
