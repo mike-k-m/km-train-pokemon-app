@@ -18,6 +18,10 @@ const deleteTrainer = async () => {
   }
 };
 
+const onCatch = async () => {
+  await navigateTo(`/trainerInfo/${trainerName}/catchPokemon`);
+}
+
 </script>
 
 <template>
@@ -29,7 +33,7 @@ const deleteTrainer = async () => {
     </div>
     <div>
       <h2>てもちポケモン</h2>
-      <button>ポケモンを捕まえる</button>
+      <button @click="onCatch">ポケモンを捕まえる</button>
     </div>
     <div>
       <!-- TODO ポケモンリスト -->
