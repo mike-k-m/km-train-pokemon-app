@@ -115,6 +115,7 @@ router.put(
   async (req, res, next) => {
     try {
       const { trainerName, pokemonName } = req.params;
+      console.log(`ポケモンの追加 trainerName: ${trainerName} pokemonName: ${pokemonName}`);
       const pokemon = await findPokemon(pokemonName);
       // TODO: 削除系 API エンドポイントを利用しないかぎりポケモンは保持する
       const result = await upsertTrainer(trainerName, { pokemons: [pokemon] });
