@@ -1,9 +1,17 @@
 <script setup>
 console.log('trainerInfo Enter');
 
+// Dynamic Routeからパラメータを取得する
+// 画面のURL http://localhost:3000/trainerInfo/<trainerName>
 const route = useRoute();
 const trainerName = route.params.name;
 
+// 画面表示最初のとき、トレーナー情報を取得し、ポケモン一覧の作成する
+const { data: trainerInfo } = await useFetch(`/api/trainer/${trainerName}`);
+console.log(`trainerInfo:`, trainerInfo.value);
+const pokemonList = trainerInfo.value.pokemons;
+
+// 「マサラタウンに帰る」ボタンのイベントハンドラー
 const deleteTrainer = async () => {
   try {
     const {data} = await useFetch(`/api/trainer/${trainerName}`, 
@@ -18,6 +26,7 @@ const deleteTrainer = async () => {
   }
 };
 
+// 「ポケモンを捕まえる」ボタンのイベントハンドラー
 const onCatch = async () => {
   await navigateTo(`/trainerInfo/${trainerName}/catchPokemon`);
 }
@@ -36,8 +45,14 @@ const onCatch = async () => {
       <button @click="onCatch">ポケモンを捕まえる</button>
     </div>
     <div>
-      <!-- TODO ポケモンリスト -->
-      <p>ポケモンリスト</p>
+      <div v-for="(pokemon, index) in pokemonList" :key="index" style="border: solid blue;">
+        <div v-if="pokemon == true"> 
+          <img :src=pokemon.sprites.front_default alt="">       
+          <span>{{ pokemon.name }}</span>
+          <button>ニックネームを付ける（未実装）</button>
+          <button>博士に送る（未実装）</button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
