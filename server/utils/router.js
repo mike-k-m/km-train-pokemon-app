@@ -117,8 +117,29 @@ router.put(
       const { trainerName, pokemonName } = req.params;
       console.log(`ポケモンの追加 trainerName: ${trainerName} pokemonName: ${pokemonName}`);
       const pokemon = await findPokemon(pokemonName);
+      // console.log(`------------`, pokemon);
       // TODO: 削除系 API エンドポイントを利用しないかぎりポケモンは保持する
-      const result = await upsertTrainer(trainerName, { pokemons: [pokemon] });
+
+      const trainerData = await getTrainer(trainerName);        // トレーナーが現在持っているポケモンのリスト。戻り値はJSON文字列
+      const trainerPokemons = JSON.parse(trainerData).pokemons; // JSON文字列からオブジェクトに変換し、中のポケモン配列を抽出
+      //  console.log(`-----!!!!!既存トレーナーのポケモン配列-------`, trainerPokemons);
+       // 新しいポケモンオブジェクトを作る
+      const newPokemon = {
+        id: trainerPokemons.length + 1, // idは既存トレーナーのポケモン配列プラス１
+        nickname: "",
+        order: pokemon.order,
+        name: pokemon.name,
+        sprites:{
+          front_default: pokemon.sprites.front_default,
+        }
+      }
+
+      // 新しいポケモンオブジェクトを、既存トレーナーのポケモン配列に追加する
+      trainerPokemons.push(newPokemon);
+      // console.log(`-----?????追加後のトレーナのポケモン配列-------`, trainerPokemons);
+
+      const result = await upsertTrainer(trainerName, { pokemons: trainerPokemons });
+      // const result = await upsertTrainer(trainerName, { pokemons: [pokemon] }); //オリジナル
       res.status(result["$metadata"].httpStatusCode).send(result);
     } catch (err) {
       next(err);
