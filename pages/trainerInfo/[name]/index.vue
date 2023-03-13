@@ -46,12 +46,12 @@ const onCatch = async () => {
     </div>
     <div>
       <div v-for="(pokemon, index) in pokemonList" :key="index" style="border: solid blue;">
-        <div v-if="pokemon == true"> 
+        <!-- <div v-if="pokemon == true">  -->
           <img :src=pokemon.sprites.front_default alt="">       
           <span>{{ pokemon.name }}</span>
           <button>ニックネームを付ける（未実装）</button>
           <button>博士に送る（未実装）</button>
-        </div>
+        <!-- </div> -->
       </div>
     </div>
   </div>
