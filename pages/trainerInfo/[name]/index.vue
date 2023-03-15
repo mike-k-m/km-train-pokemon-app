@@ -7,9 +7,16 @@ const route = useRoute();
 const trainerName = route.params.name;
 
 // 画面表示最初のとき、トレーナー情報を取得し、ポケモン一覧の作成する
-const { data: trainerInfo } = await useFetch(`/api/trainer/${trainerName}`);
+const { data: trainerInfo, refresh } = await useFetch(`/api/trainer/${trainerName}`);
 console.log(`trainerInfo:`, trainerInfo.value);
-const pokemonList = trainerInfo.value.pokemons;
+
+// pokemonListは、このページのリストですので、動的に更新するにはReactiveｓする。
+const pokemonList = ref([]);
+
+// useFetchの結果（trainerInfo)が変わる都度、pokemonListを更新する。
+watchEffect(() => {
+  pokemonList.value = trainerInfo.value.pokemons;
+});
 
 // 「マサラタウンに帰る」ボタンのイベントハンドラー
 const deleteTrainer = async () => {
@@ -25,6 +32,32 @@ const deleteTrainer = async () => {
     console.log(`deleteTrainer Err`, err);
   }
 };
+
+// ポケモンを削除する。
+const deletePokemon = async (pokemonName, pokemonID) => {
+  console.log(`deletePokemon name: ${pokemonName}, id: ${pokemonID}`);
+  try {
+    // router.delete(`/trainer/:trainerName/pokemon/:pokemonName`, 
+    const {data} = await useFetch(`/api/trainer/${trainerName}/pokemon/${pokemonID}`, 
+    {
+      method: "delete",
+    });
+    console.log(`deletePokemon useFetch結果: ${data}`);
+    
+    // PokemonListを更新するため、useFetch関数の戻り値のrefresh関数を呼ぶ。
+    // https://nuxt.com/docs/api/composables/use-fetch#return-values
+    // refresh/execute : a function that can be used to refresh the data returned by the handler function.
+    refresh();
+
+    // 以下は間違った実装（考え方間違い）
+    // ポケモンを削除した後に、同じページを遷移(reload)する事で、PokemonListが更新される想定だった。
+    // しかし、URLが同じなので、遷移しない。
+    // また、正しい考え方は、ページ内のリストをReactiveにすればページのreloadが不要。
+    // await navigateTo(`/trainerInfo/${trainerName}`);
+  } catch (err) {
+      console.log(`deletePokemon Err`, err)
+  }
+}
 
 // 「ポケモンを捕まえる」ボタンのイベントハンドラー
 const onCatch = async () => {
@@ -50,7 +83,7 @@ const onCatch = async () => {
           <img :src=pokemon.sprites.front_default alt="">       
           <span>{{ pokemon.nickname ? pokemon.nickname : pokemon.name }}</span>
           <button>ニックネームを付ける（未実装）</button>
-          <button>博士に送る（未実装）</button>
+          <button @click="deletePokemon(pokemon.name, pokemon.id)">博士に送る</button>
         <!-- </div> -->
       </div>
     </div>

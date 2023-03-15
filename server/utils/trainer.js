@@ -39,11 +39,17 @@ export const getTrainer = async(name) => {
 
 /** トレーナーの追加更新 */
 export const upsertTrainer = async (name, trainer) => {
+
+  // 確認用
+  //console.log(`upsertTrainer() Start ---------`);
+  //console.log({ name: name, pokemons: [], ...trainer });
+  //console.log(`upsertTrainer() End ---------`);
+
   const result = await s3Client.send(
     new PutObjectCommand({
       Bucket: config.bucketName,
       Key: `${name}.json`,
-      Body: JSON.stringify({ name: "", pokemons: [], ...trainer }),
+      Body: JSON.stringify({ name: name, pokemons: [], ...trainer }),
     })
   );
   return result;
@@ -65,3 +71,31 @@ export const deleteTrainer = async(name) => {
     console.log("Error", err);
   }  
 };
+
+/** ポケモンの削除 */
+export const deletePokemon = async(trainerName, pokemonID) => {
+
+  console.log(`deletPokemon() enter ${trainerName}, ${pokemonID}`); 
+  const trainerString = await getTrainer(trainerName);
+  const trainer = JSON.parse(trainerString)
+  console.log(`deletPokemon() before`, trainer); 
+
+  // 指定されたIDのポケモンを削除
+  trainer.pokemons = trainer.pokemons.filter( x => (x.id !== Number(pokemonID)));
+
+  console.log(`deletPokemon() -------------------------`); 
+  console.log(`deletPokemon() after`, trainer);
+
+  // ポケモンIDを順番に振り直す
+  for (let i = 0; i < trainer.pokemons.length; i++) {
+    trainer.pokemons[i].id = i+1;
+  }
+  
+  console.log(`deletPokemon() -------------------------`); 
+  console.log(`deletPokemon() after renumber`, trainer);
+
+  // トレーナー自体を更新する。
+  const ret = await upsertTrainer(trainerName, trainer);
+  console.log(ret);
+  return ret;
+}
