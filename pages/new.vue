@@ -23,7 +23,7 @@ const addTrainer = async() => {
 
     switch(resultCode){
       case 200:
-        alert(`${trainerName.value}を登録しました！`);
+        // alert(`${trainerName.value}を登録しました！`);
         // DONE　トレーナー情報画面に遷移する。
         await navigateTo(`/trainerInfo/${trainerName.value}`);
         break;
