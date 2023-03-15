@@ -10,6 +10,6 @@ app.use(express.urlencoded({ extended: true }));
 // を追記した。セキュリティに問題あるかもしれないが、暫定措置
 // また、npmのProxy設定、windowsのProxy設定をOFF、Pulse Secureを切断しても、例外が解消されない。
 // https://stackoverflow.com/questions/51995925/node-fetch-request-fails-on-server-unable-to-get-local-issuer-certificate
-process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
+// process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
 export default app;
