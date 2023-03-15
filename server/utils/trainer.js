@@ -99,3 +99,28 @@ export const deletePokemon = async(trainerName, pokemonID) => {
   console.log(ret);
   return ret;
 }
+
+/** ポケモンにニックネームをつけられる */
+export const giveNickName = async(trainerName, pokemonID, nickName) => {
+
+  console.log(`giveNickName() enter ${trainerName}, ${pokemonID}, ${nickName}`); 
+
+  // トレーナーのデータを取得
+  const trainerString = await getTrainer(trainerName);
+  const trainer = JSON.parse(trainerString)
+  console.log(`giveNickName() before`, trainer); 
+
+  // トレーナーのデータから該当ポケモンを探して、そのポケモンにニックネームを代入する
+  trainer.pokemons.map( (x) => {
+    if (x.id === Number(pokemonID)) {
+      x.nickname = nickName;
+    }
+  });
+  console.log(`giveNickName() -------------------------`); 
+  console.log(`giveNickName() after`, trainer);
+
+  // トレーナー自体を更新する。
+  const ret = await upsertTrainer(trainerName, trainer);
+  console.log(ret);
+  return ret;
+}

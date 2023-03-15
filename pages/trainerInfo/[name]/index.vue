@@ -59,6 +59,26 @@ const deletePokemon = async (pokemonName, pokemonID) => {
   }
 }
 
+// ニックネームを付ける
+const giveNickName = async (pokemonName, pokemonID) => {
+  const nickName = prompt(`ニックネームは？`);
+  if (nickName === "") {
+    alert(`ニックネームは空文字はできません!`);
+    return;
+  } 
+  console.log(`giveNickName(): pokemonName:${pokemonName}, pokemonID: ${pokemonID}, nickName: ${nickName}`);
+  try {
+    const {data} = await useFetch(`/api/trainer/${trainerName}/pokemon/${pokemonID}/${nickName}`, 
+    {
+      method: "put",
+    });
+    console.log(`giveNickName useFetch結果:`, data);
+    refresh();
+  } catch (err) {
+      console.log(`deletePokemon Err`, err)
+  }
+};
+
 // 「ポケモンを捕まえる」ボタンのイベントハンドラー
 const onCatch = async () => {
   await navigateTo(`/trainerInfo/${trainerName}/catchPokemon`);
@@ -82,7 +102,7 @@ const onCatch = async () => {
         <!-- <div v-if="pokemon == true">  -->
           <img :src=pokemon.sprites.front_default alt="">       
           <span>{{ pokemon.nickname ? pokemon.nickname : pokemon.name }}</span>
-          <button>ニックネームを付ける（未実装）</button>
+          <button @click="giveNickName(pokemon.name, pokemon.id)">ニックネームを付ける</button>
           <button @click="deletePokemon(pokemon.name, pokemon.id)">博士に送る</button>
         <!-- </div> -->
       </div>

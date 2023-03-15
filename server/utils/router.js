@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { findTrainers, upsertTrainer, getTrainer, deleteTrainer, deletePokemon } from "~/server/utils/trainer";
+import { findTrainers, upsertTrainer, getTrainer, deleteTrainer, deletePokemon, giveNickName } from "~/server/utils/trainer";
 import { findPokemon } from "~/server/utils/pokemon";
 
 const router = Router();
@@ -160,5 +160,20 @@ async (req, res, next) => {
     next(err);
   }
 });
+
+/** ポケモンにニックネームをつけられる */
+router.put(
+  "/trainer/:trainerName/pokemon/:pokemonID/:nickName",
+  async (req, res, next) => {
+    try {
+      const { trainerName, pokemonID, nickName } = req.params;
+      console.log(`ポケモンにニックネーム trainerName: ${trainerName} pokemonID: ${pokemonID} nickName: ${nickName}`);
+      const result = await giveNickName(trainerName, pokemonID, nickName);
+      res.status(result["$metadata"].httpStatusCode).send(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
 
 export default router;
