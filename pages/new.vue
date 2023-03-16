@@ -50,7 +50,7 @@ const addTrainer = async() => {
       <p>なまえ</p>
       <p>とくていの　もじは　とりのぞかれるぞ！</p>
       <input v-model="trainerName" type="text" >
-      <button @click="addTrainer">けってい</button>
+      <GamifyButton @click="addTrainer">けってい</GamifyButton>
     </form>
   </div>
 </template>

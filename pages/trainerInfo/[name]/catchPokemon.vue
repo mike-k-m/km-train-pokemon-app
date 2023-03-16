@@ -33,12 +33,10 @@ const onCatch = async (pokemonName) => {
   <div>
     <h1>ポケモンをつかまえる</h1>
     <p>{{ pokemonCount }}種類のポケモン</p>
-    <div v-for="(pokemon, index) in pokemonList" :key="index">
-        <span>
-            <span>{{ pokemon.name }}　</span>
-            <button @click="onCatch(pokemon.name)">捕まえる</button>
-        </span>
-    </div>
+    <GamifyList v-for="(pokemon, index) in pokemonList" :key="index">
+      <span>{{ pokemon.name }}　</span>
+      <GamifyButton @click="onCatch(pokemon.name)">捕まえる</GamifyButton>
+    </GamifyList>
   </div>
 </template>
 

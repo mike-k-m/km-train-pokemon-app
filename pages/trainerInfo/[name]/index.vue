@@ -91,21 +91,19 @@ const onCatch = async () => {
     <h1>トレーナー情報</h1>
     <div>
       <p>トレーナー名：{{trainerName}}</p>
-      <button @click="deleteTrainer">マサラタウンに帰る</button>
+      <GamifyButton @click="deleteTrainer">マサラタウンに帰る</GamifyButton>
     </div>
     <div>
       <h2>てもちポケモン</h2>
-      <button @click="onCatch">ポケモンを捕まえる</button>
+      <GamifyButton @click="onCatch">ポケモンを捕まえる</GamifyButton>
     </div>
     <div>
-      <div v-for="(pokemon, index) in pokemonList" :key="index" style="border: solid blue;">
-        <!-- <div v-if="pokemon == true">  -->
-          <img :src=pokemon.sprites.front_default alt="">       
-          <span>{{ pokemon.nickname ? pokemon.nickname : pokemon.name }}</span>
-          <button @click="giveNickName(pokemon.name, pokemon.id)">ニックネームを付ける</button>
-          <button @click="deletePokemon(pokemon.name, pokemon.id)">博士に送る</button>
-        <!-- </div> -->
-      </div>
+      <GamifyList v-for="(pokemon, index) in pokemonList" :key="index">
+        <img :src=pokemon.sprites.front_default alt="">
+        <span>{{ pokemon.nickname ? pokemon.nickname : pokemon.name }}</span>
+        <GamifyButton @click="giveNickName(pokemon.name, pokemon.id)">ニックネームを付ける</GamifyButton>
+        <GamifyButton @click="deletePokemon(pokemon.name, pokemon.id)">博士に送る</GamifyButton>
+      </GamifyList>
     </div>
   </div>
 </template>
