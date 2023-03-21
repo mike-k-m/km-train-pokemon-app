@@ -2,10 +2,17 @@
 
 const trainerName = ref("");
 
+// エラーダイアログを表示/非表示を制御するフラグ
+const showDialog = ref(false);
+
+// エラーダイアログに表示するメッセージ
+const dialogMsg = ref("");
+
 const addTrainer = async() => {
 
   if (trainerName.value === ""){
-    alert("名前を入力してから、けっていボタンを押してください。");
+    dialogMsg.value = `名前を入力してから、けっていボタンを押してください。`;
+    showDialog.value = true;
     return;
   }
 
@@ -34,10 +41,12 @@ const addTrainer = async() => {
         await navigateTo(`/trainerInfo/${trainerName.value}`);
         break;
       case 409:
-        alert(`${trainerName.value}はすでにトレーナーが存在します`);
+        dialogMsg.value = `${trainerName.value}はすでにトレーナーが存在します。`;
+        showDialog.value = true;
         break;
       case 400:
-        alert(`トレーナー名を入力してないです。`);
+        dialogMsg.value = `トレーナー名を入力してないです。`;
+        showDialog.value = true;
         break;
       default:
         console.log(`addTrainer useFetchは不明なresponseが帰ってきた${resultCode}`);
@@ -58,6 +67,9 @@ const addTrainer = async() => {
       <input v-model="trainerName" type="text" >
       <GamifyButton @click="addTrainer">けってい</GamifyButton>
     </form>
+    <GamifyDialog v-show="showDialog === true" id="1" title="かくにん" :description="dialogMsg">
+      <GamifyButton @click="showDialog = false">OK</GamifyButton>
+    </GamifyDialog>
   </div>
 </template>
 
