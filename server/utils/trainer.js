@@ -45,14 +45,19 @@ export const upsertTrainer = async (name, trainer) => {
   //console.log({ name: name, pokemons: [], ...trainer });
   //console.log(`upsertTrainer() End ---------`);
 
-  const result = await s3Client.send(
-    new PutObjectCommand({
-      Bucket: config.bucketName,
-      Key: `${name}.json`,
-      Body: JSON.stringify({ name: name, pokemons: [], ...trainer }),
-    })
-  );
-  return result;
+  try {
+    const result = await s3Client.send(
+      new PutObjectCommand({
+        Bucket: config.bucketName,
+        Key: `${name}.json`,
+        Body: JSON.stringify({ name: name, pokemons: [], ...trainer }),
+      })
+    );
+    console.log(`trainer.js upsertTrainer result:`, result);
+    return result;
+  } catch (err) {
+    console.log("Error", err);
+  }
 };
 
 /** トレーナーの削除 */
