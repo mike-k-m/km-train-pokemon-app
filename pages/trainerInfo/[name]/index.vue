@@ -1,6 +1,4 @@
 <script setup>
-console.log('trainerInfo Enter');
-
 // Dynamic Routeからパラメータを取得する
 // 画面のURL http://localhost:3000/trainerInfo/<trainerName>
 const route = useRoute();
@@ -8,7 +6,7 @@ const trainerName = route.params.name;
 
 // 画面表示最初のとき、トレーナー情報を取得し、ポケモン一覧の作成する
 const { data: trainerInfo, refresh } = await useFetch(`/api/trainer/${trainerName}`);
-console.log(`trainerInfo:`, trainerInfo.value);
+// console.log(`trainerInfo:`, trainerInfo.value);
 
 // pokemonListは、このページのリストですので、動的に更新するにはReactiveｓする。
 const pokemonList = ref([]);
@@ -17,6 +15,12 @@ const pokemonList = ref([]);
 watchEffect(() => {
   pokemonList.value = trainerInfo.value.pokemons;
 });
+
+// ニックネームを付けるダイアログを表示/非表示を制御するフラグ
+const showDialog = ref(false);
+
+// ニックネーム
+const nickName = ref("");
 
 // 「マサラタウンに帰る」ボタンのイベントハンドラー
 const deleteTrainer = async () => {
@@ -61,14 +65,14 @@ const deletePokemon = async (pokemonName, pokemonID) => {
 
 // ニックネームを付ける
 const giveNickName = async (pokemonName, pokemonID) => {
-  const nickName = prompt(`ニックネームは？`);
-  if (nickName === "") {
-    alert(`ニックネームは空文字はできません!`);
+
+  if (nickName.value === "") {
+    console.log(`giveNickName() ニックネームが空文字。基本的にあり得ない。ダイヤログで空文字チェックしたはず。`)
     return;
   } 
-  console.log(`giveNickName(): pokemonName:${pokemonName}, pokemonID: ${pokemonID}, nickName: ${nickName}`);
+  console.log(`giveNickName(): pokemonName:${pokemonName}, pokemonID: ${pokemonID}, nickName: ${nickName.value}`);
   try {
-    const {data} = await useFetch(`/api/trainer/${trainerName}/pokemon/${pokemonID}/${nickName}`, 
+    const {data} = await useFetch(`/api/trainer/${trainerName}/pokemon/${pokemonID}/${nickName.value}`, 
     {
       method: "put",
     });
@@ -77,6 +81,12 @@ const giveNickName = async (pokemonName, pokemonID) => {
   } catch (err) {
       console.log(`deletePokemon Err`, err)
   }
+
+  // ニックネームを空文字でリセットする。（次回開く時に記録されないため）
+  nickName.value = "";
+
+  // ダイヤログを閉じる（非表示する）
+  showDialog.value = false;
 };
 
 // 「ポケモンを捕まえる」ボタンのイベントハンドラー
@@ -101,8 +111,20 @@ const onCatch = async () => {
       <GamifyList v-for="(pokemon, index) in pokemonList" :key="index">
         <img :src=pokemon.sprites.front_default alt="">
         <span>{{ pokemon.nickname ? pokemon.nickname : pokemon.name }}</span>
-        <GamifyButton @click="giveNickName(pokemon.name, pokemon.id)">ニックネームを付ける</GamifyButton>
-        <GamifyButton @click="deletePokemon(pokemon.name, pokemon.id)">博士に送る</GamifyButton>
+        <!-- クリックしたら「ニックネームを付ける」ダイヤログを表示する -->
+        <GamifyButton @click="showDialog = true">ニックネームを付ける</GamifyButton>
+        <GamifyButton @click="deletePokemon(pokemon.name, pokemon.id)">博士に送る</GamifyButton>     
+        <!-- 「ニックネームを付ける」ダイヤログ -->
+        <GamifyDialog v-show="showDialog === true" id="setNickNameDialog" title="ニックネームを付ける" :description="pokemon.name + 'のニックネームは？'">
+          <div>
+            <input v-model="nickName" type="text" >
+          </div>
+          <div>
+            <!-- キャンセルの時に入力されたnickNameを空文字でリセットする。そうでないと次回開くときに残される -->
+            <GamifyButton @click="showDialog = false; nickName=''">キャンセル</GamifyButton>
+            <GamifyButton :disabled="nickName.length < 1" @click="giveNickName(pokemon.name, pokemon.id)">決定</GamifyButton>
+          </div>
+        </GamifyDialog>
       </GamifyList>
     </div>
   </div>
