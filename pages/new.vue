@@ -9,17 +9,23 @@ const addTrainer = async() => {
     return;
   }
 
+  let resultCode = 200;
   try {
-    const {data} = await useFetch(`/api/trainer`, 
+    await useFetch(`/api/trainer`, 
     {
       method: "post",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name: trainerName.value })
+      body: JSON.stringify({ name: trainerName.value }),
+
+      // useFetchのレスポンスステータス取得にInterceptorsを使う
+      // https://nuxt.com/docs/api/composables/use-fetch#example
+      onResponse( { response }) { 
+        console.debug(`トレーナーの追加 API response status: ${response.status}`);
+        resultCode = response.status;
+      }
     });
-    const resultCode = data.value["$metadata"].httpStatusCode;
-    console.log(`addTrainer useFetch結果: ${resultCode}`);
 
     switch(resultCode){
       case 200:
