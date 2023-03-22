@@ -71,8 +71,8 @@ const addTrainer = async() => {
     <GamifyDialog v-show="showDialog === true" id="1" title="かくにん" :description="dialogMsg">
       <GamifyButton @click="showDialog = false">OK</GamifyButton>
     </GamifyDialog>
+    <GamifyButton @click="navigateTo('/')">はじめの画面へ</GamifyButton>
   </div>
-  <GamifyButton @click="navigateTo('/')">はじめの画面へ</GamifyButton>
 </template>
 
 <style scoped>
