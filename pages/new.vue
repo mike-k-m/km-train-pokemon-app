@@ -41,7 +41,7 @@ const addTrainer = async() => {
         await navigateTo(`/trainerInfo/${trainerName.value}`);
         break;
       case 409:
-        dialogMsg.value = `${trainerName.value}はすでにトレーナーが存在します。`;
+        dialogMsg.value = `${trainerName.value}はすでにトレーナーが存在します。別の名前で始めてください。`;
         showDialog.value = true;
         break;
       case 400:
@@ -61,6 +61,7 @@ const addTrainer = async() => {
 <template>
   <div>
     <h1>あたらしくはじめる</h1>
+    <p>では　はじめに　きみの　なまえを　おしえて　もらおう！</p>
     <form @submit.prevent>
       <p>なまえ</p>
       <p>とくていの　もじは　とりのぞかれるぞ！</p>
