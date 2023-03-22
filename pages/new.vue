@@ -72,6 +72,7 @@ const addTrainer = async() => {
       <GamifyButton @click="showDialog = false">OK</GamifyButton>
     </GamifyDialog>
   </div>
+  <GamifyButton @click="navigateTo('/')">はじめの画面へ</GamifyButton>
 </template>
 
 <style scoped>

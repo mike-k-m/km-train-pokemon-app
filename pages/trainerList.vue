@@ -28,6 +28,7 @@ watchEffect(()=>{
           </NuxtLink>
         </p>
     </form>
+    <GamifyButton @click="navigateTo('/')">はじめの画面へ</GamifyButton>
   </div>
 </template>
 

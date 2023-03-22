@@ -115,6 +115,7 @@ const goPrevious = async () => {
   <div>
     <h1>ポケモンをつかまえる</h1>
     <p>{{ pokemonCount }}種類のポケモン</p>
+    <GamifyButton @click="navigateTo('/')">はじめの画面へ</GamifyButton>
     <div>
       <GamifyButton :disabled="disableGoPrevious" @click="goPrevious()">前へ</GamifyButton>
       <GamifyButton :disabled="disableGoNext" @click="goNext()">次へ</GamifyButton>

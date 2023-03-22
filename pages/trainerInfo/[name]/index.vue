@@ -127,6 +127,9 @@ const onCatch = async () => {
         </GamifyDialog>
       </GamifyList>
     </div>
+    <div>
+      <GamifyButton @click="navigateTo('/')">はじめの画面へ</GamifyButton>
+    </div>
   </div>
 </template>
 
