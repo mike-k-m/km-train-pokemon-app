@@ -26,27 +26,34 @@ const updateValues = () => {
 
 updateValues();
 
-console.log(`next: ${nextURL.value}`);
-console.log(`previous: ${previousURL.value}`);
+console.log(`初回 currentURL -> ${currentURL.value}`);
+console.log(`初回 previousURL -> ${previousURL.value}`);
+console.log(`初回 nextURL -> ${nextURL.value}`);
 
-// 前へのボタンを押せるかを制御するフラグ。previousURLが
-const canGoNext = computed( () => {
-  if (nextURL.value != "" || nextURL.value != null) {
+// 「前へ」、「次へ」ボタンでfetchし直すので、fetchしたデータの変化をwatchし、表示データを更新する。
+watch(pokeResult, () => {
+  updateValues();
+});
+
+// 前へのボタンを押せるかを制御するフラグ。nextURLがnull OR "" OR undefinedの時にtrueを返す（無効にすべき）
+const disableGoNext = computed( () => {
+  if (nextURL.value == "" || nextURL.value == null || nextURL.value == undefined) {
     return true;
   } else {
     return false;
   }
 });
-const canGoPrevious = computed( () => {
-  if (previousURL.value != "" || nextURL.value != null) {
+
+// 前へのボタンを押せるかを制御するフラグ。previousURLがnull OR "" OR undefinedの時にtrueを返す（無効にすべき）
+const disableGoPrevious = computed( () => {
+  if (previousURL.value == "" || previousURL.value == null || previousURL.value == undefined) {
     return true;
   } else {
     return false;
   }
 });
 
-// console.log(pokemonList);
-
+// 「捕まえる」ボタンのイベントハンドラ
 const onCatch = async (pokemonName) => {
   console.log(`cathPokemon onCatch pokemonName: ${pokemonName}`);
   try {
@@ -64,42 +71,42 @@ const onCatch = async (pokemonName) => {
   }
 };
 
+// 「次へ」ボタンのイベントハンドラー、currentURLを前回に取得したnextURLを代入し、再度fetchする。
 const goNext = async () => {
-  console.log(`goNext() enter`);
-  console.log(`goNext() currentURL.value ${currentURL.value}`);
-  console.log(`goNext() pokeResult.value.next ${pokeResult.value.next}`);
-  console.log(`goNext() pokeResult.value.previous ${pokeResult.value.previous}`);
-  console.log(`goNext() pokeResult.value.results[0].name ${pokeResult.value.results[0].name}`);
+  // console.log(`goNext() enter`);
+  // console.log(`goNext() currentURL.value ${currentURL.value}`);
+  // console.log(`goNext() pokeResult.value.next ${pokeResult.value.next}`);
+  // console.log(`goNext() pokeResult.value.previous ${pokeResult.value.previous}`);
+  // console.log(`goNext() pokeResult.value.results[0].name ${pokeResult.value.results[0].name}`);
 
   currentURL.value = nextURL.value;
 
   await refresh();
-  updateValues();
-  console.log(`goNext() ---------------------------------------------------`);
-  console.log(`goNext() After refresh()`);
+  // console.log(`goNext() ---------------------------------------------------`);
+  // console.log(`goNext() After refresh()`);
   console.log(`goNext() currentURL.value ${currentURL.value}`);
-  console.log(`goNext() pokeResult.value.next ${pokeResult.value.next}`);
-  console.log(`goNext() pokeResult.value.previous ${pokeResult.value.previous}`);
-  console.log(`goNext() pokeResult.value.results[0].name ${pokeResult.value.results[0].name}`);
+  // console.log(`goNext() pokeResult.value.next ${pokeResult.value.next}`);
+  // console.log(`goNext() pokeResult.value.previous ${pokeResult.value.previous}`);
+  // console.log(`goNext() pokeResult.value.results[0].name ${pokeResult.value.results[0].name}`);
 }
 
+// 「前へ」ボタンのイベントハンドラー、currentURLを前回に取得したnextURLを代入し、再度fetchする。
 const goPrevious = async () => {
-  console.log(`goNext() enter`);
-  console.log(`goNext() currentURL.value ${currentURL.value}`);
-  console.log(`goNext() pokeResult.value.next ${pokeResult.value.next}`);
-  console.log(`goNext() pokeResult.value.previous ${pokeResult.value.previous}`);
-  console.log(`goNext() pokeResult.value.results[0].name ${pokeResult.value.results[0].name}`);
+  // console.log(`goPrevious() enter`);
+  // console.log(`goPrevious() currentURL.value ${currentURL.value}`);
+  // console.log(`goPrevious() pokeResult.value.next ${pokeResult.value.next}`);
+  // console.log(`goPrevious() pokeResult.value.previous ${pokeResult.value.previous}`);
+  // console.log(`goPrevious() pokeResult.value.results[0].name ${pokeResult.value.results[0].name}`);
 
   currentURL.value = previousURL.value;
 
   await refresh();
-  updateValues();
-  console.log(`goNext() ---------------------------------------------------`);
-  console.log(`goNext() After refresh()`);
-  console.log(`goNext() currentURL.value ${currentURL.value}`);
-  console.log(`goNext() pokeResult.value.next ${pokeResult.value.next}`);
-  console.log(`goNext() pokeResult.value.previous ${pokeResult.value.previous}`);
-  console.log(`goNext() pokeResult.value.results[0].name ${pokeResult.value.results[0].name}`);
+  // console.log(`goPrevious() ---------------------------------------------------`);
+  // console.log(`goPrevious() After refresh()`);
+  console.log(`goPrevious() currentURL.value ${currentURL.value}`);
+  // console.log(`goPrevious() pokeResult.value.next ${pokeResult.value.next}`);
+  // console.log(`goPrevious() pokeResult.value.previous ${pokeResult.value.previous}`);
+  // console.log(`goPrevious() pokeResult.value.results[0].name ${pokeResult.value.results[0].name}`);
 }
 
 </script>
@@ -109,16 +116,16 @@ const goPrevious = async () => {
     <h1>ポケモンをつかまえる</h1>
     <p>{{ pokemonCount }}種類のポケモン</p>
     <div>
-      <GamifyButton :disabled="!canGoPrevious" @click="goPrevious()">前へ</GamifyButton>
-      <GamifyButton :disabled="!canGoNext" @click="goNext()">次へ</GamifyButton>
+      <GamifyButton :disabled="disableGoPrevious" @click="goPrevious()">前へ</GamifyButton>
+      <GamifyButton :disabled="disableGoNext" @click="goNext()">次へ</GamifyButton>
     </div>
     <GamifyList v-for="(pokemon, index) in pokemonList" :key="index">
       <span>{{ pokemon.name }}　</span>
       <GamifyButton @click="onCatch(pokemon.name)">捕まえる</GamifyButton>
     </GamifyList>
     <div>
-      <GamifyButton>前へ</GamifyButton>
-      <GamifyButton>次へ</GamifyButton>
+      <GamifyButton :disabled="disableGoPrevious" @click="goPrevious()">前へ</GamifyButton>
+      <GamifyButton :disabled="disableGoNext" @click="goNext()">次へ</GamifyButton>
     </div>
   </div>
 </template>
