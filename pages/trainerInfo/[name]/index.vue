@@ -89,11 +89,6 @@ const giveNickName = async (pokemonName, pokemonID) => {
   showDialog.value = false;
 };
 
-// 「ポケモンを捕まえる」ボタンのイベントハンドラー
-const onCatch = async () => {
-  await navigateTo(`/trainerInfo/${trainerName}/catchPokemon`);
-}
-
 </script>
 
 <template>
@@ -106,7 +101,7 @@ const onCatch = async () => {
     <GamifyButton @click="deleteTrainer">マサラタウンに帰る</GamifyButton>
     <div>
       <h2>てもちポケモン</h2>
-      <GamifyButton @click="onCatch">ポケモンを捕まえる</GamifyButton>
+      <CatchButton :to="`/trainerInfo/${trainerName}/catchPokemon`">ポケモンを捕まえる</CatchButton>
     </div>
     <div>
       <GamifyList v-for="(pokemon, index) in pokemonList" :key="index">
