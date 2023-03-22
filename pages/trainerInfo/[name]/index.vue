@@ -100,9 +100,10 @@ const onCatch = async () => {
   <div>
     <h1>トレーナー情報</h1>
     <div>
-      <p>トレーナー名：{{trainerName}}</p>
-      <GamifyButton @click="deleteTrainer">マサラタウンに帰る</GamifyButton>
+      <img src="/avatar.png" alt="トレーナ" class="img_size">
+      <span>トレーナー名：{{trainerName}}</span>
     </div>
+    <GamifyButton @click="deleteTrainer">マサラタウンに帰る</GamifyButton>
     <div>
       <h2>てもちポケモン</h2>
       <GamifyButton @click="onCatch">ポケモンを捕まえる</GamifyButton>
@@ -134,6 +135,10 @@ const onCatch = async () => {
 </template>
 
 <style scoped>
+.img_size {
+  width: 50px
+}
+
 form {
   border-radius: 0.5rem;
   border: solid 4px #555;
