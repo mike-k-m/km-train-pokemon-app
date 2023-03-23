@@ -19,6 +19,15 @@ watchEffect(() => {
 // ニックネームを付けるダイアログを表示/非表示を制御するフラグ
 const showDialog = ref(false);
 
+// ニックネームダイアログに表示するメッセージ（動的に変わる）
+const dialogMsg = ref("");
+
+// ニックネームダイヤログの中のボタンに渡される対象のポケモン名
+const targetPokemonName = ref("");
+
+// ニックネームダイヤログの中のボタンに渡される対象のポケモンID
+const targetPokemonID = ref(0);
+
 // ニックネーム
 const nickName = ref("");
 
@@ -64,19 +73,21 @@ const deletePokemon = async (pokemonName, pokemonID) => {
 }
 
 // ニックネームを付ける
-const giveNickName = async (pokemonName, pokemonID) => {
+const setNickName = async (pokemonName, pokemonID) => {
+
+  console.log(`setNickName() Enter pokemonName=>${pokemonName}, pokemonID=>${pokemonID}`);
 
   if (nickName.value === "") {
-    console.log(`giveNickName() ニックネームが空文字。基本的にあり得ない。ダイヤログで空文字チェックしたはず。`)
+    console.log(`setNickName() ニックネームが空文字。基本的にあり得ない。ダイヤログで空文字チェックしたはず。`)
     return;
   } 
-  console.log(`giveNickName(): pokemonName:${pokemonName}, pokemonID: ${pokemonID}, nickName: ${nickName.value}`);
+  console.log(`setNickName(): pokemonName:${pokemonName}, pokemonID: ${pokemonID}, nickName: ${nickName.value}`);
   try {
     const {data} = await useFetch(`/api/trainer/${trainerName}/pokemon/${pokemonID}/${nickName.value}`, 
     {
       method: "put",
     });
-    console.log(`giveNickName useFetch結果:`, data);
+    console.log(`setNickName useFetch結果:`, data);
     refresh();
   } catch (err) {
       console.log(`deletePokemon Err`, err)
@@ -85,8 +96,28 @@ const giveNickName = async (pokemonName, pokemonID) => {
   // ニックネームを空文字でリセットする。（次回開く時に記録されないため）
   nickName.value = "";
 
+  // 設定したポケモン名とIDをクリアする。
+  targetPokemonName.value = "";
+  targetPokemonID.value = 0;
+
   // ダイヤログを閉じる（非表示する）
   showDialog.value = false;
+};
+
+
+// 「ニックネームを付ける」ボタンのハンドラー。ダイヤログを開くための準備とgiveNickName()呼び出すの準備
+const openSetNicknameDialog = (pokemonName, pokemonID) => {
+    console.log(`openSetNicknameDialog enter pokemonName=>${pokemonName}, pokemonID=>${pokemonID}`);
+
+    // setNickName()に渡すパラメータを設定する。
+    targetPokemonName.value = pokemonName;
+    targetPokemonID.value = pokemonID;
+
+    // ダイアログに表示するメッセージを設定する。
+    dialogMsg.value = `${pokemonName}のニックネームは？`;
+
+    // ダイヤログを開く（表示する）
+    showDialog.value = true;
 };
 
 </script>
@@ -104,24 +135,26 @@ const giveNickName = async (pokemonName, pokemonID) => {
       <CatchButton :to="`/trainerInfo/${trainerName}/catchPokemon`">ポケモンを捕まえる</CatchButton>
     </div>
     <div>
+      <!-- てもちポケモン一覧 -->
       <GamifyList v-for="(pokemon, index) in pokemonList" :key="index">
         <img :src=pokemon.sprites.front_default alt="">
         <span>{{ pokemon.nickname ? pokemon.nickname : pokemon.name }}</span>
         <!-- クリックしたら「ニックネームを付ける」ダイヤログを表示する -->
-        <GamifyButton @click="showDialog = true">ニックネームを付ける</GamifyButton>
-        <GamifyButton @click="deletePokemon(pokemon.name, pokemon.id)">博士に送る</GamifyButton>     
-        <!-- 「ニックネームを付ける」ダイヤログ -->
-        <GamifyDialog v-show="showDialog === true" id="setNickNameDialog" title="ニックネームを付ける" :description="pokemon.name + 'のニックネームは？'">
-          <div>
-            <input v-model="nickName" type="text" >
-          </div>
-          <div>
-            <!-- キャンセルの時に入力されたnickNameを空文字でリセットする。そうでないと次回開くときに残される -->
-            <GamifyButton @click="showDialog = false; nickName=''">キャンセル</GamifyButton>
-            <GamifyButton :disabled="nickName.length < 1" @click="giveNickName(pokemon.name, pokemon.id)">決定</GamifyButton>
-          </div>
-        </GamifyDialog>
+        <GamifyButton @click="openSetNicknameDialog(pokemon.name, pokemon.id)">ニックネームを付ける</GamifyButton>
+        <GamifyButton @click="deletePokemon(pokemon.name, pokemon.id)">博士に送る</GamifyButton>
       </GamifyList>
+
+      <!-- 「ニックネームを付ける」ダイヤログ -->
+      <GamifyDialog v-show="showDialog === true" id="setNickNameDialog" title="ニックネームを付ける" :description="dialogMsg">
+        <div>
+          <input v-model="nickName" type="text" >
+        </div>
+        <div>
+          <!-- キャンセルの時に入力されたnickNameを空文字でリセットする。そうでないと次回開くときに残される -->
+          <GamifyButton @click="showDialog = false; nickName=''">キャンセル</GamifyButton>
+          <GamifyButton :disabled="nickName.length < 1" @click="setNickName(targetPokemonName, targetPokemonID)">決定</GamifyButton>
+        </div>
+      </GamifyDialog>
     </div>
     <div>
       <GamifyButton @click="navigateTo('/')">はじめの画面へ</GamifyButton>
