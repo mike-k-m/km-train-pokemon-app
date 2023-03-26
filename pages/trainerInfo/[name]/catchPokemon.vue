@@ -1,6 +1,4 @@
 <script setup>
-console.log(`cathPokemon Enter`);
-
 const route = useRoute();
 const trainerName = route.params.name;
 
@@ -66,7 +64,7 @@ const disableGoPrevious = computed( () => {
 
 // 「捕まえる」ボタンのイベントハンドラ
 const onCatch = async (pokemonName) => {
-  console.log(`cathPokemon onCatch pokemonName: ${pokemonName}`);
+  // console.log(`cathPokemon onCatch pokemonName: ${pokemonName}`);
   try {
     await useFetch(`/api/trainer/${trainerName}/pokemon/${pokemonName}`,
                   { 

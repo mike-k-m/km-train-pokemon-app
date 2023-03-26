@@ -13,8 +13,8 @@ async function doesTrainerExist(inputName) {
   const trainers = await findTrainers();
     const names = trainers.map( trainer => trainer.Key).map( name => name.replace('.json',''));
     if (names.includes(inputName)){
-      console.log(`inputトレーナー名: ${inputName}`);
-      console.log(`登録されているトレーナー名: ${names}`);
+      // console.log(`inputトレーナー名: ${inputName}`);
+      // console.log(`登録されているトレーナー名: ${names}`);
       return true;
     }
     return false;
@@ -27,7 +27,6 @@ router.get("/trainers", async (_req, res, next) => {
     // TODO: 期待するレスポンスボディに変更する
     // console.log(trainers);
     const names = trainers.map( trainer => trainer.Key).map( name => name.replace('.json',''));
-    // const names = [].map( trainer => trainer.Key).map( name => name.replace('.json','')); // テスト用 
     res.send(names);
   } catch (err) {
     next(err);
@@ -41,15 +40,15 @@ router.post("/trainer", async (req, res, next) => {
     if (req.body.name === "")
     {
       console.log(`req.body.nameが不正 req.body.name: ${req.body.name}`);
-      res.status(400).send("トレーナー名が含まれていない");
+      res.status(400).send("");
     }
     // TODO: すでにトレーナー（S3 オブジェクト）が存在していれば409を返す
     if (await doesTrainerExist(req.body.name)){
-      res.status(409).send("すでにトレーナーが存在する");
+      res.status(409).send("");
     }
 
     const result = await upsertTrainer(req.body.name, req.body);
-    console.log(`trainer API result:`, result);
+    // console.log(`trainer API result:`, result);
     res.status(result["$metadata"].httpStatusCode).send(result);
   } catch (err) {
     next(err);
@@ -81,7 +80,7 @@ router.post("/trainer/:trainerName", async (req, res, next) => {
     // TODO: トレーナーが存在していなければ404を返す
     console.log(`POST ${trainerName}`)
     if (await doesTrainerExist(trainerName) == false){     
-      res.status(404).send("トレーナーが存在しない");
+      res.status(404).send("");
     } else {
       const result = await upsertTrainer(trainerName, req.body);
       res.status(result["$metadata"].httpStatusCode).send(result);
@@ -97,9 +96,9 @@ router.delete("/trainer/:trainerName", async (req, res, next) => {
   try {
     const { trainerName } = req.params;
     // TODO: トレーナーが存在していなければ404を返す
-    console.log(`DELETE ${trainerName}`)
+    // console.log(`DELETE ${trainerName}`)
     if (await doesTrainerExist(trainerName) == false){     
-      res.status(404).send("トレーナーが存在しない");
+      res.status(404).send("");
     } else {
       const result = await deleteTrainer(trainerName, req.body);
       res.status(result["$metadata"].httpStatusCode).send(result);
@@ -115,7 +114,7 @@ router.put(
   async (req, res, next) => {
     try {
       const { trainerName, pokemonName } = req.params;
-      console.log(`ポケモンの追加 trainerName: ${trainerName} pokemonName: ${pokemonName}`);
+      // console.log(`ポケモンの追加 trainerName: ${trainerName} pokemonName: ${pokemonName}`);
       const pokemon = await findPokemon(pokemonName);
       // console.log(`------------`, pokemon);
       // TODO: 削除系 API エンドポイントを利用しないかぎりポケモンは保持する
@@ -153,7 +152,7 @@ router.delete(`/trainer/:trainerName/pokemon/:pokemonID`,
 async (req, res, next) => {
   try {
     const { trainerName, pokemonID } = req.params;
-    console.log(`DELETE ${trainerName}, ${pokemonID}`);
+    // console.log(`DELETE ${trainerName}, ${pokemonID}`);
     const result = await deletePokemon(trainerName, pokemonID);
     res.status(result["$metadata"].httpStatusCode).send(result);
   } catch (err) {
@@ -167,7 +166,7 @@ router.put(
   async (req, res, next) => {
     try {
       const { trainerName, pokemonID, nickName } = req.params;
-      console.log(`ポケモンにニックネーム trainerName: ${trainerName} pokemonID: ${pokemonID} nickName: ${nickName}`);
+      // console.log(`ポケモンにニックネーム trainerName: ${trainerName} pokemonID: ${pokemonID} nickName: ${nickName}`);
       const result = await giveNickName(trainerName, pokemonID, nickName);
       res.status(result["$metadata"].httpStatusCode).send(result);
     } catch (err) {

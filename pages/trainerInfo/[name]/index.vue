@@ -34,12 +34,10 @@ const nickName = ref("");
 // 「マサラタウンに帰る」ボタンのイベントハンドラー
 const deleteTrainer = async () => {
   try {
-    const {data} = await useFetch(`/api/trainer/${trainerName}`, 
+    await useFetch(`/api/trainer/${trainerName}`, 
     {
       method: "delete",
     });
-    // const resultCode = data.value["$metadata"].httpStatusCode; // TODO レスポンスの型に問題ある
-    console.log(`deleteTrainer useFetch結果: ${data}`);
     await navigateTo(`/`);
   } catch(err) {
     console.log(`deleteTrainer Err`, err);
@@ -50,17 +48,15 @@ const deleteTrainer = async () => {
 const deletePokemon = async (pokemonName, pokemonID) => {
   console.log(`deletePokemon name: ${pokemonName}, id: ${pokemonID}`);
   try {
-    // router.delete(`/trainer/:trainerName/pokemon/:pokemonName`, 
-    const {data} = await useFetch(`/api/trainer/${trainerName}/pokemon/${pokemonID}`, 
+    await useFetch(`/api/trainer/${trainerName}/pokemon/${pokemonID}`, 
     {
       method: "delete",
     });
-    console.log(`deletePokemon useFetch結果: ${data}`);
     
     // PokemonListを更新するため、useFetch関数の戻り値のrefresh関数を呼ぶ。
     // https://nuxt.com/docs/api/composables/use-fetch#return-values
     // refresh/execute : a function that can be used to refresh the data returned by the handler function.
-    refresh();
+    await refresh();
 
     // 以下は間違った実装（考え方間違い）
     // ポケモンを削除した後に、同じページを遷移(reload)する事で、PokemonListが更新される想定だった。
@@ -75,20 +71,20 @@ const deletePokemon = async (pokemonName, pokemonID) => {
 // ニックネームを付ける
 const setNickName = async (pokemonName, pokemonID) => {
 
-  console.log(`setNickName() Enter pokemonName=>${pokemonName}, pokemonID=>${pokemonID}`);
+  // console.log(`setNickName() Enter pokemonName=>${pokemonName}, pokemonID=>${pokemonID}`);
 
   if (nickName.value === "") {
     console.log(`setNickName() ニックネームが空文字。基本的にあり得ない。ダイヤログで空文字チェックしたはず。`)
     return;
   } 
-  console.log(`setNickName(): pokemonName:${pokemonName}, pokemonID: ${pokemonID}, nickName: ${nickName.value}`);
+  
   try {
-    const {data} = await useFetch(`/api/trainer/${trainerName}/pokemon/${pokemonID}/${nickName.value}`, 
+    await useFetch(`/api/trainer/${trainerName}/pokemon/${pokemonID}/${nickName.value}`, 
     {
       method: "put",
     });
-    console.log(`setNickName useFetch結果:`, data);
-    refresh();
+    
+    await refresh();
   } catch (err) {
       console.log(`deletePokemon Err`, err)
   }
@@ -107,7 +103,7 @@ const setNickName = async (pokemonName, pokemonID) => {
 
 // 「ニックネームを付ける」ボタンのハンドラー。ダイヤログを開くための準備とgiveNickName()呼び出すの準備
 const openSetNicknameDialog = (pokemonName, pokemonID) => {
-    console.log(`openSetNicknameDialog enter pokemonName=>${pokemonName}, pokemonID=>${pokemonID}`);
+    // console.log(`openSetNicknameDialog enter pokemonName=>${pokemonName}, pokemonID=>${pokemonID}`);
 
     // setNickName()に渡すパラメータを設定する。
     targetPokemonName.value = pokemonName;

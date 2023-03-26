@@ -53,7 +53,7 @@ export const upsertTrainer = async (name, trainer) => {
         Body: JSON.stringify({ name: name, pokemons: [], ...trainer }),
       })
     );
-    console.log(`trainer.js upsertTrainer result:`, result);
+    // console.log(`trainer.js upsertTrainer result:`, result);
     return result;
   } catch (err) {
     console.log("Error", err);
@@ -70,7 +70,7 @@ export const deleteTrainer = async(name) => {
   };
   try {
     const data = await s3Client.send(new DeleteObjectCommand(bucketParams));
-    console.log("Backend Success. トレーナーを削除しました。", data);
+    // console.log("Backend Success. トレーナーを削除しました。", data);
     return data;
   } catch (err) {
     console.log("Error", err);
@@ -80,40 +80,40 @@ export const deleteTrainer = async(name) => {
 /** ポケモンの削除 */
 export const deletePokemon = async(trainerName, pokemonID) => {
 
-  console.log(`deletPokemon() enter ${trainerName}, ${pokemonID}`); 
+  // console.log(`deletPokemon() enter ${trainerName}, ${pokemonID}`); 
   const trainerString = await getTrainer(trainerName);
   const trainer = JSON.parse(trainerString)
-  console.log(`deletPokemon() before`, trainer); 
+  // console.log(`deletPokemon() before`, trainer); 
 
   // 指定されたIDのポケモンを削除
   trainer.pokemons = trainer.pokemons.filter( x => (x.id !== Number(pokemonID)));
 
-  console.log(`deletPokemon() -------------------------`); 
-  console.log(`deletPokemon() after`, trainer);
+  // console.log(`deletPokemon() -------------------------`); 
+  // console.log(`deletPokemon() after`, trainer);
 
   // ポケモンIDを順番に振り直す
   for (let i = 0; i < trainer.pokemons.length; i++) {
     trainer.pokemons[i].id = i+1;
   }
   
-  console.log(`deletPokemon() -------------------------`); 
-  console.log(`deletPokemon() after renumber`, trainer);
+  // console.log(`deletPokemon() -------------------------`); 
+  // console.log(`deletPokemon() after renumber`, trainer);
 
   // トレーナー自体を更新する。
   const ret = await upsertTrainer(trainerName, trainer);
-  console.log(ret);
+  // console.log(ret);
   return ret;
 }
 
 /** ポケモンにニックネームをつけられる */
 export const giveNickName = async(trainerName, pokemonID, nickName) => {
 
-  console.log(`giveNickName() enter ${trainerName}, ${pokemonID}, ${nickName}`); 
+  // console.log(`giveNickName() enter ${trainerName}, ${pokemonID}, ${nickName}`); 
 
   // トレーナーのデータを取得
   const trainerString = await getTrainer(trainerName);
   const trainer = JSON.parse(trainerString)
-  console.log(`giveNickName() before`, trainer); 
+  // console.log(`giveNickName() before`, trainer); 
 
   // トレーナーのデータから該当ポケモンを探して、そのポケモンにニックネームを代入する
   trainer.pokemons.map( (x) => {
@@ -121,11 +121,11 @@ export const giveNickName = async(trainerName, pokemonID, nickName) => {
       x.nickname = nickName;
     }
   });
-  console.log(`giveNickName() -------------------------`); 
-  console.log(`giveNickName() after`, trainer);
+  // console.log(`giveNickName() -------------------------`); 
+  // console.log(`giveNickName() after`, trainer);
 
   // トレーナー自体を更新する。
   const ret = await upsertTrainer(trainerName, trainer);
-  console.log(ret);
+  // console.log(ret);
   return ret;
 }
